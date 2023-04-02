@@ -1,4 +1,5 @@
 <form method="POST" id="form_employee">
+	<input type="hidden" class="csrf_hash" name="<?= $this->security->get_csrf_token_name(); ?>" value="<?= $this->security->get_csrf_hash(); ?>">
 	<div class="form-group">
 		<label for="name">Name</label>
 		<input type="text" class="form-control" name="name" id="name" value="<?= $employee->name ?>">
@@ -34,6 +35,9 @@
 			e.preventDefault()
 			let id = <?= $employee->id ?>
 
+			let csrf_name = $('.csrf_hash').attr('name')
+			let csrf_hash = $('.csrf_hash').val()
+
 			$.ajax({
 				url: `http://localhost/test/employee/update_employee/${id}`,
 				type: 'post',
@@ -41,6 +45,8 @@
 				cache: false,
 				success: function(response) {
 					let data = JSON.parse(response)
+
+					$('.csrf_hash').val(data.csrf_hash)
 
 					if (data.success === true) {
 						$('#myModal').modal('hide')
@@ -55,7 +61,6 @@
 					}
 
 					if (data.success === false) {
-						console.log(data.errors.name_error)
 						if (data.errors.name_error != '') {
 							$('#name').addClass('is-invalid')
 							$('#name_error').html(data.errors.name_error)

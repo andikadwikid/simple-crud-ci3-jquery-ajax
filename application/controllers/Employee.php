@@ -34,14 +34,22 @@ class Employee extends CI_Controller
 		$validation->set_rules($employee->rules());
 
 		if ($validation->run()) {
-			$this->session->set_flashdata('success', 'Berhasil disimpan');
+			$data = [
+				'success' => true,
+			];
 			return $employee->save();
+		} else {
+			$data = [
+				'success' => false,
+				'errors' => [
+					'name_error' => form_error('name'),
+					'address_error' => form_error('address'),
+					'phone_error' => form_error('phone'),
+					'email_error' => form_error('email'),
+				]
+			];
 		}
-
-		// error form for validation
-		$errors = validation_errors();
-
-		$this->session->set_flashdata('error', $errors);
+		echo json_encode($data);
 	}
 
 	public function edit_Employee($id = null)
@@ -59,13 +67,17 @@ class Employee extends CI_Controller
 		$validation->set_rules($employee->rules());
 
 		if ($validation->run()) {
-			$data = ['success' => true];
+			$data = [
+				'success' => true,
+				'csrf_hash' => $this->security->get_csrf_hash()
+			];
 			$employee->update($id);
 
 			echo json_encode($data);
 		} else {
 			$data = [
 				'success' => false,
+				'csrf_hash' => $this->security->get_csrf_hash(),
 				'errors' => [
 					'name_error' => form_error('name'),
 					'address_error' => form_error('address'),
