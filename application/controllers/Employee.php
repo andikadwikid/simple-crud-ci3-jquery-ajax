@@ -59,16 +59,22 @@ class Employee extends CI_Controller
 		$validation->set_rules($employee->rules());
 
 		if ($validation->run()) {
+			$data = ['success' => true];
 			$employee->update($id);
+
+			echo json_encode($data);
 		} else {
-			$errors = [
-				'error' => true,
-				'name_error' => form_error('name'),
-				'address_error' => form_error('address'),
-				'phone_error' => form_error('phone'),
-				'email_error' => form_error('email'),
+			$data = [
+				'success' => false,
+				'errors' => [
+					'name_error' => form_error('name'),
+					'address_error' => form_error('address'),
+					'phone_error' => form_error('phone'),
+					'email_error' => form_error('email'),
+				]
 			];
-			echo json_encode($errors);
+
+			echo json_encode($data);
 		}
 	}
 
